@@ -1,0 +1,35 @@
+# Access Twitter API in Python
+import tweepy as tw
+import pandas as pd
+import re # to remove links
+consumer_key= 'Gl5ueQZiLxkNTyr3BnpYGL6mO'
+consumer_secret= 'XDFzAaWVcveeQEK9W7Q4rgHt27zhSBP3BF205S2ABDofkcIHBV'
+access_token= '1349217305377574913-ASlhDrTaL9sISjL0Cna5N4qeOuoPIf'
+access_token_secret= 'lbbggnwlaNPuD343csGfchqkFpfJ4oGpWkRyRYLosw0yM'
+auth = tw.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+api = tw.API(auth, wait_on_rate_limit=True)
+
+# Search Twitter for Tweets
+# Define the search term and the date_since date as variables
+# Right here, use hashtag as an example
+search_words = "#bitcoin -filter:retweets"
+# The filter after the search word will remove all retweets
+
+# Collect tweets
+tweets_df = tw.Cursor(api.search, q=search_words, lang="en",
+                   since='2021-3-8', until='2021-3-9').items() 
+                    # items() limits the number of tweets returned
+
+# Iterate and print tweets
+# for tweet in tweets:
+#     print(tweet.text)
+
+def remove_url(txt):
+     return " ".join(re.sub("([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", txt).
+                     split())
+
+users_tweets = [remove_url(tweet.text) for tweet in tweets_df]
+tweet_text_df = pd.DataFrame(data=users_tweets, columns=["text"])
+print(tweet_text_df)
+tweet_text_df.to_csv('3-8 to 3-9 tweets for VADER.csv')
