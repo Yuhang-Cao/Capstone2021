@@ -1,0 +1,28 @@
+import pandas as pd
+
+# call the SentimentIntensityAnalyser object
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+analyzer = SentimentIntensityAnalyzer()
+
+# def sentiment_analyzer_scores(sentence):
+#     score = analyzer.polarity_scores(sentence)
+#     print("{:-<70} {}".format(sentence, str(score)))
+
+tweetsScore_df = pd.read_csv('100 tweets for VADER.csv')
+
+# print(tweets['text'])
+
+tweetsScore_df['neg'] = tweetsScore_df['text'].apply(
+    lambda x:analyzer.polarity_scores(x)['neg'])
+tweetsScore_df['neu'] = tweetsScore_df['text'].apply(
+    lambda x:analyzer.polarity_scores(x)['neu'])
+tweetsScore_df['pos'] = tweetsScore_df['text'].apply(
+    lambda x:analyzer.polarity_scores(x)['pos'])
+tweetsScore_df['compound'] = tweetsScore_df['text'].apply(
+    lambda x:analyzer.polarity_scores(x)['compound'])
+
+# Delete a column that is repeated because of calling a csv file
+tweetsScore_df.drop(tweetsScore_df.columns[[0]], axis=1, inplace=True)
+
+# Write dataframe to a new csv file
+tweetsScore_df.to_csv('100 tweets for VADER result.csv')
